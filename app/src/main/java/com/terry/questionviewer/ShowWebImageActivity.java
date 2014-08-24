@@ -5,13 +5,12 @@ import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.StringTokenizer;
 
 public class ShowWebImageActivity extends Activity {
 
@@ -20,6 +19,8 @@ public class ShowWebImageActivity extends Activity {
     private TextView tvImageCount = null;
 
     private int imgCount, currentIndex;
+
+    private Handler messageHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,32 +42,33 @@ public class ShowWebImageActivity extends Activity {
 
     }
 
-    private void LoadImage(String imgDefine) {
+    private void LoadImage(final String imgDefine) {
         String Base64Prefix = "data:image/png;base64,";
         if (imgDefine.startsWith(Base64Prefix)) {
             imageView.setImageBitmap(Util.Base64StringToBitmap(imgDefine.substring(Base64Prefix.length())));
         } else {
-            try {
 
-                BitmapDrawable d = (BitmapDrawable) loadImageFromUrl(imgDefine);
-                imageView.setImageBitmap(((BitmapDrawable) loadImageFromUrl(imgDefine)).getBitmap());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+//                        cachedImage = asyncImageLoader.loadDrawable(imageUrl, position);
+//                        imageView.setImageDrawable(cachedImage);
+                    try {
 
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+                        imageView.setImageBitmap(((BitmapDrawable) ShowWebImageActivity.loadImageFromUrl(imgDefine)).getBitmap());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
-    public Drawable loadImageFromUrl(String url) throws IOException {
-
-
+    public static Drawable loadImageFromUrl(String url) throws IOException {
 
         URL m = new URL(url);
-        Log.i("AAAAAAAAAAAAAAAAAAAAAAA", "1");
         InputStream i = (InputStream) m.getContent();
-        Log.i("AAAAAAAAAAAAAAAAAAAAAAA", "2");
         Drawable d = Drawable.createFromStream(i, "src");
-        Log.i("AAAAAAAAAAAAAAAAAAAAAAA", "3");
         return d;
     }
 
