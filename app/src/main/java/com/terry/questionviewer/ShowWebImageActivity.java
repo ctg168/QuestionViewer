@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,13 +15,11 @@ import java.net.URL;
 
 public class ShowWebImageActivity extends Activity {
 
-    private String imagePath = null;
+    private String imagePath;
     private ZoomableImageView imageView = null;
-    private TextView tvImageCount = null;
+    private TextView tvImageCount;
 
     private int imgCount, currentIndex;
-
-    private Handler messageHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,6 @@ public class ShowWebImageActivity extends Activity {
         this.imgCount = getIntent().getIntExtra("imgCount", 0);
         this.currentIndex = getIntent().getIntExtra("currentIndex", 1);
 
-
         //加载界面
         LoadImage(imagePath);
         tvImageCount.setText(String.valueOf(currentIndex) + "/" + String.valueOf(imgCount));
@@ -47,30 +45,25 @@ public class ShowWebImageActivity extends Activity {
         if (imgDefine.startsWith(Base64Prefix)) {
             imageView.setImageBitmap(Util.Base64StringToBitmap(imgDefine.substring(Base64Prefix.length())));
         } else {
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-//                        cachedImage = asyncImageLoader.loadDrawable(imageUrl, position);
-//                        imageView.setImageDrawable(cachedImage);
-                    try {
-
-                        imageView.setImageBitmap(((BitmapDrawable) ShowWebImageActivity.loadImageFromUrl(imgDefine)).getBitmap());
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }).start();
+            Toast.makeText(getApplicationContext(), "没有做普通图片的查看,只做了Bast64的", Toast.LENGTH_SHORT).show();
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        imageView.setImageBitmap(((BitmapDrawable) ShowWebImageActivity.loadImageFromUrl(imgDefine)).getBitmap());
+//                    } catch (IOException ex) {
+//                        ex.printStackTrace();
+//                    }
+//                }
+//            });
         }
     }
 
-    public static Drawable loadImageFromUrl(String url) throws IOException {
-
-        URL m = new URL(url);
-        InputStream i = (InputStream) m.getContent();
-        Drawable d = Drawable.createFromStream(i, "src");
-        return d;
-    }
-
-
+//    public static Drawable loadImageFromUrl(String url) throws IOException {
+//
+//        URL m = new URL(url);
+//        InputStream i = (InputStream) m.getContent();
+//        Drawable d = Drawable.createFromStream(i, "src");
+//        return d;
+//    }
 }
